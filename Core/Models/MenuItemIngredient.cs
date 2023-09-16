@@ -2,10 +2,12 @@
 
 namespace Core.Models
 {
-    public class Ingredient
+    public class MenuItemIngredient
     {
         [Key]
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public Guid MenuItemId { get; set; }
+        public Guid IngredientId { get; set; }
+
     }
 }

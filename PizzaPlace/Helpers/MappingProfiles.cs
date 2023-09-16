@@ -10,7 +10,8 @@ namespace PizzaPlace.Helpers
     {
         public MappingProfiles()
         {
-
+            CreateMap<MenuItemIngredient, Ingredient>();
+            CreateMap<Guest, LoginGuestInfoDto>();
         }
     }
 }

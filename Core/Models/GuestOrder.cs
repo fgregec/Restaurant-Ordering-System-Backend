@@ -7,11 +7,20 @@ using System.Threading.Tasks;
 
 namespace Core.Models
 {
+    public enum OrderStatus
+    {
+        BOOKED, CANCELED, SERVED
+    }
     public class GuestOrder
     {
         [Key]
-        public int Id { get; set; }
-        public Guid UserId { get; set; }
-        public List<OrderItem> Order { get; set; }
+        public Guid Id { get; set; }
+        public Guid GuestId { get; set; }
+        public DateTime PlacedAt { get; set; }
+        public DateTime PlacedFor { get; set; }
+        public int NumberOfPeople { get; set; }
+        public OrderStatus OrderStatus { get; set; }
+        public List<OrderMenuItem> OrderMenuItems { get; set; }
+        public List<RemovedIngredient> RemovedIngredients { get; set; }
     }
 }

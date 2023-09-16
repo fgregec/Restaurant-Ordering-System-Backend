@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230805193215_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20230915125032_NumberOfPeople")]
+    partial class NumberOfPeople
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,30 +58,32 @@ namespace Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Core.Models.GuestOrder", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GuestId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("NumberOfPeople")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("PlacedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<DateTime>("PlacedFor")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("GuestOrder");
+                    b.ToTable("GuestOrders");
                 });
 
             modelBuilder.Entity("Core.Models.Ingredient", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("MenuItemId")
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -89,18 +91,14 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MenuItemId");
-
                     b.ToTable("Ingredients");
                 });
 
             modelBuilder.Entity("Core.Models.MenuItem", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -114,24 +112,42 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("MenuItem");
+                    b.ToTable("MenuItems");
                 });
 
-            modelBuilder.Entity("Core.Models.OrderItem", b =>
+            modelBuilder.Entity("Core.Models.MenuItemIngredient", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("IngredientId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("GuestOrderId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("MenuItemId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("MenuItemId")
-                        .HasColumnType("int");
+                    b.HasKey("Id");
+
+                    b.ToTable("MenuItemIngredients");
+                });
+
+            modelBuilder.Entity("Core.Models.OrderMenuItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GuestOrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MenuItemId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -142,21 +158,40 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("MenuItemId");
 
-                    b.ToTable("OrderItem");
+                    b.ToTable("OrderMenuItems");
                 });
 
-            modelBuilder.Entity("Core.Models.Ingredient", b =>
+            modelBuilder.Entity("Core.Models.RemovedIngredient", b =>
                 {
-                    b.HasOne("Core.Models.MenuItem", null)
-                        .WithMany("Ingredients")
-                        .HasForeignKey("MenuItemId");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("GuestOrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("IngredientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OrderMenuItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuestOrderId");
+
+                    b.HasIndex("IngredientId");
+
+                    b.ToTable("RemovedIngredients");
                 });
 
-            modelBuilder.Entity("Core.Models.OrderItem", b =>
+            modelBuilder.Entity("Core.Models.OrderMenuItem", b =>
                 {
                     b.HasOne("Core.Models.GuestOrder", null)
-                        .WithMany("Order")
-                        .HasForeignKey("GuestOrderId");
+                        .WithMany("OrderMenuItems")
+                        .HasForeignKey("GuestOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Core.Models.MenuItem", "MenuItem")
                         .WithMany()
@@ -167,14 +202,26 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("MenuItem");
                 });
 
-            modelBuilder.Entity("Core.Models.GuestOrder", b =>
+            modelBuilder.Entity("Core.Models.RemovedIngredient", b =>
                 {
-                    b.Navigation("Order");
+                    b.HasOne("Core.Models.GuestOrder", null)
+                        .WithMany("RemovedIngredients")
+                        .HasForeignKey("GuestOrderId");
+
+                    b.HasOne("Core.Models.Ingredient", "Ingredient")
+                        .WithMany()
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ingredient");
                 });
 
-            modelBuilder.Entity("Core.Models.MenuItem", b =>
+            modelBuilder.Entity("Core.Models.GuestOrder", b =>
                 {
-                    b.Navigation("Ingredients");
+                    b.Navigation("OrderMenuItems");
+
+                    b.Navigation("RemovedIngredients");
                 });
 #pragma warning restore 612, 618
         }

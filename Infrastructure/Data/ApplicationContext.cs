@@ -13,7 +13,12 @@ namespace Infrastructure.Data
 
         public DbSet<Guest> Guests { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
-        public DbSet<MenuItem> MenuItem { get; set; }
-        public DbSet<GuestOrder> GuestOrder { get; set; }
+        public DbSet<MenuItem> MenuItems { get; set; }
+        public DbSet<MenuItemIngredient> MenuItemIngredients { get; set; }
+        public DbSet<OrderMenuItem> OrderMenuItems { get; set; }
+        public DbSet<GuestOrder> GuestOrders { get; set; }
+        public DbSet<RemovedIngredient> RemovedIngredients { get; set; }
+
     }
+
 }

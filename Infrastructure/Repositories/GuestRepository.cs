@@ -2,11 +2,6 @@
 using Core.Models;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -16,7 +11,7 @@ namespace Infrastructure.Repositories
         public GuestRepository(ApplicationContext context) 
         {
             _context = context;
-        }
+        } 
         public Task<Guest> GetById(int id)
         {
             throw new NotImplementedException();
@@ -25,10 +20,12 @@ namespace Infrastructure.Repositories
         public async Task<Guest> Login(string email, string password)
         {
             var guestExists = await _context.Guests.FirstOrDefaultAsync(g => g.Email == email && g.Password == password);
+
             if (guestExists == null)
             {
                 return null;
             }
+            guestExists.Password = "null";
             return guestExists;
         }
 

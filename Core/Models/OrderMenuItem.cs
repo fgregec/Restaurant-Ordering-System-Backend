@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace Core.Models
 {
-    public class OrderItem
+    public class OrderMenuItem
     {
         [Key]
-        public int Id { get; set; }
-        public MenuItem MenuItem  { get; set; }
+        public Guid Id { get; set; }
+        public Guid MenuItemId { get; set; }
+        public Guid GuestOrderId { get; set; }
         public int Quantity { get; set; }
+        public MenuItem MenuItem { get; set; }
     }
 }

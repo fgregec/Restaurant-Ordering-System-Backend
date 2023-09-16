@@ -11,11 +11,13 @@ namespace PizzaPlace.Controllers
     {
         private readonly IGuestRepository _guestRepository;
         private readonly IDevelopmentRepository _developmentRepository;
+        private readonly IMapper _mapper;
 
-        public GuestController(IGuestRepository guestRepository, IDevelopmentRepository developmentRepository)
+        public GuestController(IGuestRepository guestRepository, IDevelopmentRepository developmentRepository, IMapper mapper)
         {
             _guestRepository = guestRepository;
             _developmentRepository = developmentRepository;
+            _mapper = mapper;   
         }
 
         [HttpPost("register")]
@@ -43,14 +45,18 @@ namespace PizzaPlace.Controllers
                 return BadRequest("Please provide email and password!");
             }
 
-            var guest = await _guestRepository.Login(loginGuest.Email, loginGuest.Password);
+            Guest guest = await _guestRepository.Login(loginGuest.Email, loginGuest.Password);
 
             if (guest == null)
             {
                 return Unauthorized("Login failed!");
             }
 
-            return Ok(guest);
+            LoginGuestInfoDto loginGuestInfo = new LoginGuestInfoDto();
+                
+            _mapper.Map(guest, loginGuestInfo);
+
+            return Ok(loginGuestInfo);
         }
 
         [HttpPost("loadseeddata")]
