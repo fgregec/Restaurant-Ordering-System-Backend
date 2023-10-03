@@ -13,6 +13,7 @@ namespace PizzaPlace.Dtos
         public DateTime PlacedAt { get; set; }
         public DateTime PlacedFor { get; set; }
         public int NumberOfPeople { get; set; }
+        public Guid GuestId { get; set; }
         public OrderStatus OrderStatus { get; set; }
     }
 }

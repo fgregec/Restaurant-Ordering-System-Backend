@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.Employee_Models;
+using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -10,7 +11,7 @@ namespace Infrastructure.Data
         {
             
         }
-
+        // GUEST APP
         public DbSet<Guest> Guests { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
@@ -18,6 +19,9 @@ namespace Infrastructure.Data
         public DbSet<OrderMenuItem> OrderMenuItems { get; set; }
         public DbSet<GuestOrder> GuestOrders { get; set; }
         public DbSet<RemovedIngredient> RemovedIngredients { get; set; }
+
+        // EMPLOYEE APP
+        public DbSet<Employee> Employees { get; set; }
 
     }
 

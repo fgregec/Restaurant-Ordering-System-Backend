@@ -9,7 +9,7 @@ namespace Core.Models
 {
     public enum OrderStatus
     {
-        BOOKED, CANCELED, SERVED
+        BOOKED, CANCELED, COOKED, IN_PROGRESS, SERVED
     }
     public class GuestOrder
     {
