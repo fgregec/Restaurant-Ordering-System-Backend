@@ -5,6 +5,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -89,6 +90,20 @@ namespace Infrastructure.Repositories
             }
 
             return false; 
+        }
+
+        public async Task<int> GetManagerData()
+        {
+            DateTime dateNow = DateTime.Now;
+
+            return _context.GuestOrders
+                .Where(go => go.PlacedFor.Date == dateNow.Date)
+                .Where(go => go.OrderStatus != OrderStatus.CANCELED)
+                .Include(go => go.OrderMenuItems)
+                .ThenInclude(omi => omi.MenuItem)
+                .Include(go => go.RemovedIngredients)
+                .ThenInclude(ri => ri.Ingredient)
+                .ToList().Count;
         }
     }
 }

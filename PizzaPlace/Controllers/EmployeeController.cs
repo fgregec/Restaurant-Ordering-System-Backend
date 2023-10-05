@@ -70,5 +70,25 @@ namespace PizzaPlace.Controllers
 
             return Ok();
         }
+
+        [HttpGet("getmanagerdata")]
+        //[Authorize(Policy = "Employee")]
+        public async Task<ActionResult<ManagerDataDto>> GetManagerData()
+        {
+            var result = await _employeeRepository.GetManagerData();
+
+            if (result == null)
+            {
+                return BadRequest();
+            }
+
+            decimal totalEarned = PaymentController.GetDailyRevenue(DateTime.Now);
+
+            ManagerDataDto data = new ManagerDataDto();
+            data.DailyRevenue = Decimal.ToInt32(totalEarned);
+            data.NumberOfOrders = result;
+
+            return Ok(data);
+        }
     }
 }

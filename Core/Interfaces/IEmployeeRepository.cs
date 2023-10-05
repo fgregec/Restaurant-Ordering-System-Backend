@@ -15,5 +15,6 @@ namespace Core.Interfaces
         Task<Employee> GetById(Guid id);
         Task<List<GuestOrder>> GetOrders();
         Task<bool> UpdateStatus(string status, Guid id);
+        Task<int> GetManagerData();
     }
 }

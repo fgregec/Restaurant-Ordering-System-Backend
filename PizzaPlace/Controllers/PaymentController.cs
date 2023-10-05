@@ -28,4 +28,26 @@ public class PaymentController : BaseApiController
             return BadRequest(new { Error = ex.Message });
         }
     }
+    public static decimal GetDailyRevenue(DateTime date)
+    {
+        var startDate = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, DateTimeKind.Utc);
+        var endDate = new DateTime(date.Year, date.Month, date.Day, 23, 59, 59, DateTimeKind.Utc);
+
+        var options = new ChargeListOptions
+        {
+            Created = new DateRangeOptions
+            {
+                GreaterThanOrEqual = startDate,
+                LessThanOrEqual = endDate
+            }
+        };
+
+        var service = new ChargeService();
+        var charges = service.List(options).ToList();
+
+        decimal totalRevenue = charges.Sum(c => c.Amount / 100m);
+
+        return totalRevenue;
+    }
+
 }
