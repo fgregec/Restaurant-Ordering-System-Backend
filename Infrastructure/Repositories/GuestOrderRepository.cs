@@ -65,13 +65,13 @@ namespace Infrastructure.Repositories
         }
         public async Task<List<GuestOrder>> GetAllOrders(Guid guestID)
         {
-            List<GuestOrder> guestOrder =  _context.GuestOrders
+            List<GuestOrder> guestOrder = await _context.GuestOrders
                 .Where(go => go.GuestId == guestID)
                 .Include(go => go.OrderMenuItems)
                 .ThenInclude(omi => omi.MenuItem)
                 .Include(go => go.RemovedIngredients)
                 .ThenInclude(ri => ri.Ingredient)
-                .ToList();
+                .ToListAsync();
 
             return guestOrder;
 
@@ -80,7 +80,7 @@ namespace Infrastructure.Repositories
         public async Task<bool> CancelOrder(Guid orderId, Guid guestId)
         {
             var guestOrder = await _context.GuestOrders
-                   .FirstOrDefaultAsync(o => o.Id == orderId && o.GuestId == guestId);
+                   .FirstAsync(o => o.Id == orderId && o.GuestId == guestId);
 
             if(guestOrder.PlacedFor < DateTime.UtcNow)
             {

@@ -1,5 +1,6 @@
 using Core.Interfaces;
 using Infrastructure.Data;
+using Infrastructure.Decorators;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,11 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IGuestRepository, GuestRepository>();
+
 builder.Services.AddScoped<IGuestOrderRepository, GuestOrderRepository>();
+builder.Services.Decorate<IGuestOrderRepository, CachingGuestOrderRepository>();
+
+
 builder.Services.AddScoped<IDevelopmentRepository, DevelopmentRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
@@ -60,6 +65,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Manager", policy => policy.RequireClaim(ClaimTypes.Role, "MANAGER"));
 });
 
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
